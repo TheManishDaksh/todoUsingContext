@@ -1,7 +1,9 @@
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
-import { todoProvider } from './context/todoContext';
+import { TodoProvider } from './context/TodoContext';
+import { TodoForm } from './components/TodoForm';
+import TodoItem from './components/TodoItem';
 
 function App() {
 
@@ -22,11 +24,22 @@ function App() {
   const toggleComplete = (id)=>{
     setTodos((prevtodo)=>prevtodo.map((prev)=> (prev.id === id)? {
       ...prev, completed : !prev.completed
-    } : prev))
+    } : prev))  
   }
 
+  useEffect(()=>{
+      const todoItems = JSON.parse(localStorage.getItem("todos"));
+      if(todoItems && todoItems.length >0){
+        setTodos(todoItems) 
+      }
+  },[])
+
+  useEffect(()=>{
+    localStorage.setItem("todos", JSON.stringify(todos))
+  },[todos])
+
   return (
-    <todoProvider value={{todos, addTodo, updateTodo, deleteTodo, toggleComplete}}>
+    <TodoProvider value={{todos, addTodo, updateTodo, deleteTodo, toggleComplete}}>
       <div className="bg-[#172842] min-h-screen py-8">
                 <div className="w-full max-w-2xl mx-auto shadow-md rounded-lg px-4 py-3 text-white">
                     <h1 className="text-2xl font-bold text-center mb-8 mt-2">Manage Your Todos</h1>
@@ -46,7 +59,7 @@ function App() {
                     </div>
                 </div>
             </div>
-    </todoProvider>
+    </TodoProvider>
   )
 }
 
